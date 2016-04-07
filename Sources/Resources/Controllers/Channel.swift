@@ -1,6 +1,5 @@
 import Kitura
 import KituraNet
-
 import LoggerAPI
 import SwiftyJSON
 
@@ -11,14 +10,10 @@ func setupChannelRoutes(router: Router) {
     
     let routeUrl = "/api/channels"
     
-    ///
-    /// Setup the database
-    ///
+    // Setup the database
     let channels: ChannelCollection = ChannelCollectionArray()
     
-    /**
-        Get all the channels
-    */
+    // Get all channels
     router.get(routeUrl) {
         request, response, next in
 
@@ -33,9 +28,7 @@ func setupChannelRoutes(router: Router) {
         }
     }
     
-    /**
-     Get information about a channel item by ID
-     */
+    // Get information about a channel by ID
     router.get(routeUrl + "/:id") {
         request, response, next in
         
@@ -59,9 +52,7 @@ func setupChannelRoutes(router: Router) {
         }
     }
     
-    /**
-     Add a channel list item
-     */
+    // Add a channel
     router.post(routeUrl) {
         request, response, next in
         
@@ -79,13 +70,9 @@ func setupChannelRoutes(router: Router) {
         
         let json = body.asJson()!
         
-        let title = json["title"].stringValue
-        let order = json["order"].intValue
-        let completed = json["completed"].boolValue
+        let channel = ChannelItem(json: json)
         
-        Log.info("Received \(title)")
-        
-        channels.add(title, order: order, completed: completed) {
+        channels.add(channel) {
             newItem in
             let result = JSON(newItem.serialize())
             do  {
@@ -96,38 +83,7 @@ func setupChannelRoutes(router: Router) {
         }
     }
     
-    router.post(routeUrl + "/:id") {
-        request, response, next in
-        
-        let id: String? = request.params["id"]
-        
-        guard request.body != nil else {
-            Log.warning("No body")
-            response.status(HttpStatusCode.BAD_REQUEST)
-            return
-        }
-        
-        guard request.body!.asJson() != nil else {
-            response.status(HttpStatusCode.BAD_REQUEST)
-            return
-        }
-        
-        let json = request.body!.asJson()!
-        
-        let title = json["title"].stringValue
-        let order = json["order"].intValue
-        let completed = json["completed"].boolValue
-        
-        channels.update(id!, title: title, order: order, completed: completed) {
-            newItem in
-            let result = JSON(newItem!.serialize())
-            response.status(HttpStatusCode.OK).sendJson(result)
-        }
-    }
-    
-    /**
-     Update an existing Channel item
-     */
+    // Update an existing Channel
     router.put(routeUrl + "/:id") {
         request, response, next in
         
@@ -145,11 +101,9 @@ func setupChannelRoutes(router: Router) {
         
         let body = request.body!
         if let json = body.asJson() {
-            let title = json["title"].stringValue
-            let order = json["order"].intValue
-            let completed = json["completed"].boolValue
+            let channel = ChannelItem(json: json)
             
-            channels.update(id!, title: title, order: order, completed: completed) {
+            channels.update(id!, channel: channel) {
                 newItem in
                 if let newItem = newItem {
                     let result = JSON(newItem.serialize())
@@ -161,9 +115,7 @@ func setupChannelRoutes(router: Router) {
         }
     }
     
-    ///
-    /// Delete an individual channel item
-    ///
+    // Delete an individual channel
     router.delete(routeUrl + "/:id") {
         request, response, next in
         Log.info("Requesting a delete")
@@ -182,9 +134,7 @@ func setupChannelRoutes(router: Router) {
         }
     }
     
-    /**
-     Delete all the channel items
-     */
+    // Delete all the channels
     router.delete(routeUrl) {
         request, response, next in
         
