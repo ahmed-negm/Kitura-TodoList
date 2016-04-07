@@ -1,8 +1,8 @@
 applications:
-- name: Kitura-TodoList
+- name: Hivepod-Swift-Sample
   path: .
   memory: 256M
   instances: 2
   domain: mybluemix.net
-  host: kitura-todolist
+  host: Hivepod-Swift-Sample
   disk_quota: 1024M

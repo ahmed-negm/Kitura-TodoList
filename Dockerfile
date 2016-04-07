@@ -7,4 +7,4 @@ RUN cd /root && ./configure && make && make install
 RUN cd /root && mkdir swift-helloworld
 COPY . /root/swift-helloworld/
 RUN cd /root/swift-helloworld && swift build -Xcc -fblocks -Xswiftc -I/usr/local/include -Xlinker -L/usr/local/lib
-CMD ["/root/swift-helloworld/.build/debug/TodoList"]
+CMD ["/root/swift-helloworld/.build/debug/Resources"]
