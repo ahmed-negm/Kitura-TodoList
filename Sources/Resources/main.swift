@@ -39,31 +39,42 @@ Log.logger = HeliumLogger()
 ///
 let todos: TodoCollection = TodoCollectionArray(baseURL: "http://localhost:8090/todos")
 
-///
-/// Add some example data to the database
-///
-// todos.add("Reticulate splines", order: 0, completed: false)
-// todos.add("Herd llamas", order: 1, completed: false)
 
-setupRoutes( router, todos: todos )
+/**
+ Custom middleware that allows Cross Origin HTTP requests
+ */
+class AllRemoteOriginMiddleware: RouterMiddleware {
+    func handle(request: RouterRequest, response: RouterResponse, next: () -> Void) {
+        response.setHeader("Access-Control-Allow-Origin", value: "*")
+        next()
+    }
+}
+
+router.all("/*", middleware: BodyParser())
+
+router.all("/*", middleware: AllRemoteOriginMiddleware())
+
+/**
+ Handle options
+ */
+router.options("/*") {
+    request, response, next in
+    
+    response.setHeader("Access-Control-Allow-Headers", value: "accept, content-type")
+    response.setHeader("Access-Control-Allow-Methods", value: "GET,HEAD,POST,DELETE,OPTIONS,PUT,PATCH")
+    
+    response.status(HttpStatusCode.OK)
+    
+    next()
+}
+
+setupChannelRoutes( router, todos: todos )
 
 ///
 /// Listen to port 8090
 ///
-//do {
-//  let appEnv = try CFEnvironment.getAppEnv()
-  // Let's use the given port and binding host to create a socket for our server...
-//  let ip: String = appEnv.bind
-//  let port: Int = appEnv.port
-
-//  let server = HttpServer.listen(port, delegate: router)
 let port = 8090
 let server = HttpServer.listen(port, delegate: router)
 Server.run()
 
-//  // Once the server starts, print the url value
-//  print("Server is starting on \(appEnv.url).")
-
-//} catch CFEnvironmentError.InvalidValue {
-//  print("Oops, something went wrong... Server did not start!")
-//}
+print("Server is starting ...")
