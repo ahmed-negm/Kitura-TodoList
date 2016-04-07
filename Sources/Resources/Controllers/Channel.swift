@@ -7,9 +7,15 @@ import SwiftyJSON
 /**
  Sets up all the routes for the Channel Resource
 */
-func setupChannelRoutes(router: Router, todos: TodoCollection) {
+func setupChannelRoutes(router: Router) {
     
     let routeUrl = "/api/channels"
+    
+    ///
+    /// Setup the database
+    ///
+    let todos: TodoCollection = TodoCollectionArray()
+    
     /**
         Get all the todos
     */

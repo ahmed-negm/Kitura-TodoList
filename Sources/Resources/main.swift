@@ -17,12 +17,6 @@ let router = Router()
 ///
 Log.logger = HeliumLogger()
 
-///
-/// Setup the database
-///
-let todos: TodoCollection = TodoCollectionArray(baseURL: "http://localhost:8090/todos")
-
-
 /**
  Custom middleware that allows Cross Origin HTTP requests
  */
@@ -51,7 +45,7 @@ router.options("/*") {
     next()
 }
 
-setupChannelRoutes( router, todos: todos )
+setupChannelRoutes(router)
 
 ///
 /// Listen to port 8090
