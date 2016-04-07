@@ -8,11 +8,12 @@ import SwiftyJSON
  Sets up all the routes for the Channel Resource
 */
 func setupChannelRoutes(router: Router, todos: TodoCollection) {
-
+    
+    let routeUrl = "/api/channels"
     /**
         Get all the todos
     */
-    router.get("/") {
+    router.get(routeUrl) {
         request, response, next in
 
         todos.getAll() {
@@ -29,7 +30,7 @@ func setupChannelRoutes(router: Router, todos: TodoCollection) {
     /**
      Get information about a todo item by ID
      */
-    router.get("/todos/:id") {
+    router.get(routeUrl + "/:id") {
         request, response, next in
         
         let id: String? = request.params["id"]
@@ -55,7 +56,7 @@ func setupChannelRoutes(router: Router, todos: TodoCollection) {
     /**
      Add a todo list item
      */
-    router.post("/") {
+    router.post(routeUrl) {
         request, response, next in
         
         guard request.body != nil else {
@@ -89,7 +90,7 @@ func setupChannelRoutes(router: Router, todos: TodoCollection) {
         }
     }
     
-    router.post("/todos/:id") {
+    router.post(routeUrl + "/:id") {
         request, response, next in
         
         let id: String? = request.params["id"]
@@ -119,9 +120,9 @@ func setupChannelRoutes(router: Router, todos: TodoCollection) {
     }
     
     /**
-     Patch or update an existing Todo item
+     Update an existing Todo item
      */
-    router.patch("/todos/:id") {
+    router.put(routeUrl + "/:id") {
         request, response, next in
         
         let id: String? = request.params["id"]
@@ -157,7 +158,7 @@ func setupChannelRoutes(router: Router, todos: TodoCollection) {
     ///
     /// Delete an individual todo item
     ///
-    router.delete("/todos/:id") {
+    router.delete(routeUrl + "/:id") {
         request, response, next in
         Log.info("Requesting a delete")
         let id: String? = request.params["id"]
@@ -178,7 +179,7 @@ func setupChannelRoutes(router: Router, todos: TodoCollection) {
     /**
      Delete all the todo items
      */
-    router.delete("/") {
+    router.delete(routeUrl) {
         request, response, next in
         
         Log.info("Requested clearing the entire list")
