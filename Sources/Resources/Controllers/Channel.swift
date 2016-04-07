@@ -14,17 +14,17 @@ func setupChannelRoutes(router: Router) {
     ///
     /// Setup the database
     ///
-    let todos: TodoCollection = TodoCollectionArray()
+    let channels: ChannelCollection = ChannelCollectionArray()
     
     /**
-        Get all the todos
+        Get all the channels
     */
     router.get(routeUrl) {
         request, response, next in
 
-        todos.getAll() {
-            todos in
-            let json = JSON(TodoCollectionArray.serialize(todos))
+        channels.getAll() {
+            channels in
+            let json = JSON(ChannelCollectionArray.serialize(channels))
             do {
                 try response.status(HttpStatusCode.OK).sendJson(json).end()
             } catch {
@@ -34,7 +34,7 @@ func setupChannelRoutes(router: Router) {
     }
     
     /**
-     Get information about a todo item by ID
+     Get information about a channel item by ID
      */
     router.get(routeUrl + "/:id") {
         request, response, next in
@@ -46,7 +46,7 @@ func setupChannelRoutes(router: Router) {
             return
         }
         
-        todos.get(id!) {
+        channels.get(id!) {
             item in
             if let item = item {
                 let result = JSON(item.serialize())
@@ -60,7 +60,7 @@ func setupChannelRoutes(router: Router) {
     }
     
     /**
-     Add a todo list item
+     Add a channel list item
      */
     router.post(routeUrl) {
         request, response, next in
@@ -85,7 +85,7 @@ func setupChannelRoutes(router: Router) {
         
         Log.info("Received \(title)")
         
-        todos.add(title, order: order, completed: completed) {
+        channels.add(title, order: order, completed: completed) {
             newItem in
             let result = JSON(newItem.serialize())
             do  {
@@ -118,7 +118,7 @@ func setupChannelRoutes(router: Router) {
         let order = json["order"].intValue
         let completed = json["completed"].boolValue
         
-        todos.update(id!, title: title, order: order, completed: completed) {
+        channels.update(id!, title: title, order: order, completed: completed) {
             newItem in
             let result = JSON(newItem!.serialize())
             response.status(HttpStatusCode.OK).sendJson(result)
@@ -126,7 +126,7 @@ func setupChannelRoutes(router: Router) {
     }
     
     /**
-     Update an existing Todo item
+     Update an existing Channel item
      */
     router.put(routeUrl + "/:id") {
         request, response, next in
@@ -149,7 +149,7 @@ func setupChannelRoutes(router: Router) {
             let order = json["order"].intValue
             let completed = json["completed"].boolValue
             
-            todos.update(id!, title: title, order: order, completed: completed) {
+            channels.update(id!, title: title, order: order, completed: completed) {
                 newItem in
                 if let newItem = newItem {
                     let result = JSON(newItem.serialize())
@@ -162,7 +162,7 @@ func setupChannelRoutes(router: Router) {
     }
     
     ///
-    /// Delete an individual todo item
+    /// Delete an individual channel item
     ///
     router.delete(routeUrl + "/:id") {
         request, response, next in
@@ -173,7 +173,7 @@ func setupChannelRoutes(router: Router) {
             response.status(HttpStatusCode.BAD_REQUEST)
             return
         }
-        todos.delete(id!) {
+        channels.delete(id!) {
             do {
                 try response.status(HttpStatusCode.OK).end()
             } catch {
@@ -183,14 +183,14 @@ func setupChannelRoutes(router: Router) {
     }
     
     /**
-     Delete all the todo items
+     Delete all the channel items
      */
     router.delete(routeUrl) {
         request, response, next in
         
         Log.info("Requested clearing the entire list")
         
-        todos.clear() {
+        channels.clear() {
             do {
                 try response.status(HttpStatusCode.OK).end()
             } catch {

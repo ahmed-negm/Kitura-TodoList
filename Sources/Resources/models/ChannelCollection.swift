@@ -14,7 +14,7 @@ import Foundation
     typealias JSONDictionary = [String: Any]
 #endif
 
-struct TodoItem {
+struct ChannelItem {
     var id: String = ""
     var order: Int = 0
     var title: String = ""
@@ -36,29 +36,29 @@ struct TodoItem {
 }
 
 /**
- TodoCollection
+ ChannelCollection
 
- TodoCollection defines the DAO for todo lists
+ ChannelCollection defines the DAO for channel lists
 */
-protocol TodoCollection {
+protocol ChannelCollection {
     var count: Int { get }
 
     func clear( oncompletion: (Void) -> Void)
  
-    func getAll( oncompletion: ([TodoItem]) -> Void )
+    func getAll( oncompletion: ([ChannelItem]) -> Void )
     
-    func get(id: String, oncompletion: (TodoItem?) -> Void )
+    func get(id: String, oncompletion: (ChannelItem?) -> Void )
  
-    func add(title: String, order: Int, completed: Bool, oncompletion: (TodoItem) -> Void )
+    func add(title: String, order: Int, completed: Bool, oncompletion: (ChannelItem) -> Void )
 
-    func update(id: String, title: String?, order: Int?, completed: Bool?, oncompletion: (TodoItem?) -> Void )
+    func update(id: String, title: String?, order: Int?, completed: Bool?, oncompletion: (ChannelItem?) -> Void )
 
     func delete(id: String, oncompletion: (Void) -> Void)
     
-    static func serialize(items: [TodoItem]) -> [JSONDictionary]
+    static func serialize(items: [ChannelItem]) -> [JSONDictionary]
 }
 
-class TodoCollectionArray: TodoCollection {
+class ChannelCollectionArray: ChannelCollection {
 
     ///
     /// Ensure in order writes to the collection
@@ -71,9 +71,9 @@ class TodoCollectionArray: TodoCollection {
     var idCounter: Int = 0
 
     ///
-    /// Internal storage of TodoItems as a Dictionary
+    /// Internal storage of ChannelItems as a Dictionary
     ///
-    private var _collection = [String: TodoItem]()
+    private var _collection = [String: ChannelItem]()
     
     init() {
     }
@@ -89,27 +89,27 @@ class TodoCollectionArray: TodoCollection {
         }
     }
 
-    func getAll( oncompletion: ([TodoItem]) -> Void ) {
+    func getAll( oncompletion: ([ChannelItem]) -> Void ) {
         writingQueue.queueSync() {
-            oncompletion( [TodoItem](self._collection.values) )
+            oncompletion( [ChannelItem](self._collection.values) )
         }
     }
     
-    func get(id: String, oncompletion: (TodoItem?) -> Void ) {
+    func get(id: String, oncompletion: (ChannelItem?) -> Void ) {
         writingQueue.queueSync() {
             oncompletion(self._collection[id])
         }
     }
 
-    static func serialize(items: [TodoItem]) -> [JSONDictionary] {
+    static func serialize(items: [ChannelItem]) -> [JSONDictionary] {
         return items.map { $0.serialize() }
     }
 
-    func add(title: String, order: Int, completed: Bool, oncompletion: (TodoItem) -> Void ) {
+    func add(title: String, order: Int, completed: Bool, oncompletion: (ChannelItem) -> Void ) {
         var original: String
         original = String(self.idCounter)
         
-        let newItem = TodoItem(id: original,
+        let newItem = ChannelItem(id: original,
             order: order,
             title: title,
             completed: completed
@@ -123,13 +123,13 @@ class TodoCollectionArray: TodoCollection {
         }
     }
     
-    func update(id: String, title: String?, order: Int?, completed: Bool?, oncompletion: (TodoItem?) -> Void ) {
+    func update(id: String, title: String?, order: Int?, completed: Bool?, oncompletion: (ChannelItem?) -> Void ) {
         // search for element
         let oldValue = _collection[id]
         
         if let oldValue = oldValue {
             // use nil coalescing operator
-            let newValue = TodoItem( id: id,
+            let newValue = ChannelItem( id: id,
                 order: order ?? oldValue.order,
                 title: title ?? oldValue.title,
                 completed: completed ?? oldValue.completed
