@@ -20,6 +20,7 @@ let router = Router()
 Log.logger = HeliumLogger()
 
 // Apply middlewares
+router.all("/*", middleware: StaticFileServer(path: "/root/swift-helloworld/public", options: nil))
 router.all("/*", middleware: BodyParser())
 router.all("/*", middleware: AllRemoteOriginMiddleware())
 
